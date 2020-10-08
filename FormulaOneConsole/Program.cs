@@ -8,6 +8,7 @@ namespace FormulaOneConsole
     {
         public const string WORKINGPATH = @"C:\data\formulaone\";
         private const string CONNECTION_STRING = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + WORKINGPATH + @"FormulaOne.mdf;Integrated Security=True";
+        public static string THISDATAPATH = $"{Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName}\\Data\\";
 
         static void Main(string[] args)
         {
@@ -45,7 +46,7 @@ namespace FormulaOneConsole
         private static void copyDB(string dbName)
         {
             var oldDbFilePath = File.ReadAllText(WORKINGPATH + dbName);
-            string newDbFilePath = $"{Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName}\\Data\\{dbName}";
+            string newDbFilePath = THISDATAPATH + dbName;
             File.Copy(newDbFilePath, oldDbFilePath, true);
         }
 
