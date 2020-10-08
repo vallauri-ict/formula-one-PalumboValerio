@@ -11,6 +11,9 @@ namespace FormulaOneConsole
 
         static void Main(string[] args)
         {
+            copyDB("Countries.sql");
+            copyDB("Teams.sql");
+            copyDB("Drivers.sql");
             char scelta = ' ';
             do
             {
@@ -37,6 +40,13 @@ namespace FormulaOneConsole
                         break;
                 }
             } while (scelta != 'X' && scelta != 'x');
+        }
+
+        private static void copyDB(string dbName)
+        {
+            var oldDbFilePath = File.ReadAllText(WORKINGPATH + dbName);
+            string newDbFilePath = $"{Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName}\\Data\\{dbName}";
+            File.Copy(newDbFilePath, oldDbFilePath, true);
         }
 
         static void ExecuteSqlScript(string sqlScriptName)
