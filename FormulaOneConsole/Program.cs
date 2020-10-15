@@ -74,6 +74,7 @@ namespace FormulaOneConsole
 
             var con = new SqlConnection(CONNECTION_STRING);
             var cmd = new SqlCommand("query", con);
+
             con.Open(); int i = 0; int nErr = 0;
             foreach (var query in sqlqueries)
             {
