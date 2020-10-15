@@ -91,7 +91,7 @@ namespace FormulaOneConsole
                 }
             }
             con.Close();
-            string finalMessage = nErr == 0 ? "Script ended successfully without errors" : "Script ended with " + nErr + " errors";
+            string finalMessage = nErr == 0 ? "Script " + sqlScriptName + " ended without errors" : "Script ended with " + nErr + " errors";
             if(!reset) Console.WriteLine(finalMessage);
         }
 
