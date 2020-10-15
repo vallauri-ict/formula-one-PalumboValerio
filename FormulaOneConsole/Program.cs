@@ -8,10 +8,15 @@ namespace FormulaOneConsole
     {
         public const string WORKINGPATH = @"C:\data\formulaone\";
         private const string CONNECTION_STRING = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + WORKINGPATH + @"FormulaOne.mdf;Integrated Security=True";
-        public static string THISDATAPATH = $"{Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName}\\Data\\";
+        public static string THISDATAPATH = $"{Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName}\\Data\\";
+        
+
+
+
 
         static void Main(string[] args)
         {
+            //string aus = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName;
             copyDB("Countries.sql");
             copyDB("Teams.sql");
             copyDB("Drivers.sql");
@@ -22,6 +27,8 @@ namespace FormulaOneConsole
                 Console.WriteLine("1 - Create Countries");
                 Console.WriteLine("2 - Create Teams");
                 Console.WriteLine("3 - Create Drivers");
+                Console.WriteLine("------------------");
+                Console.WriteLine("r - Reset DB");
                 Console.WriteLine("------------------");
                 Console.WriteLine("X - EXIT\n");
                 scelta = Console.ReadKey(true).KeyChar;
@@ -35,7 +42,10 @@ namespace FormulaOneConsole
                         break;
                     case '3':
                         ExecuteSqlScript("Drivers.sql");
-                        break;                   
+                        break;
+                    case 'r':
+                        ResetDB();
+                        break;
                     default:
                         if (scelta != 'X' && scelta != 'x') Console.WriteLine("\nUncorrect Choice - Try Again\n");
                         break;
@@ -45,7 +55,7 @@ namespace FormulaOneConsole
 
         private static void copyDB(string dbName)
         {
-            var oldDbFilePath = File.ReadAllText(WORKINGPATH + dbName);
+            var oldDbFilePath = WORKINGPATH + dbName;
             string newDbFilePath = THISDATAPATH + dbName;
             File.Copy(newDbFilePath, oldDbFilePath, true);
         }
@@ -76,8 +86,38 @@ namespace FormulaOneConsole
                     nErr++;
                 }
             }
+            con.Close();
             string finalMessage = nErr == 0 ? "Script ended successfully without errors" : "Script ended with " + nErr + " errors";
             Console.WriteLine(finalMessage);
+        }
+
+        private static void ResetDB()
+        {
+            var con = new SqlConnection(CONNECTION_STRING);
+
+            try
+            {
+                con.Open();
+                ExecuteQuery("DROP TABLE IF EXISTS Country", con);
+                ExecuteQuery("DROP TABLE IF EXISTS Team", con);
+                ExecuteQuery("DROP TABLE IF EXISTS Driver", con);
+                con.Close();
+
+                ExecuteSqlScript("Countries.sql");
+                ExecuteSqlScript("Teams.sql");
+                ExecuteSqlScript("Drivers.sql");
+                Console.WriteLine("Reset concluso correttamente");
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Errore");
+            }
+        }
+
+        private static void ExecuteQuery(string query, SqlConnection con)
+        {
+            var cmd = new SqlCommand(query, con);
+            cmd.ExecuteNonQuery();
         }
     }
 }
