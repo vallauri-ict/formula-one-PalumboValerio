@@ -63,8 +63,9 @@ namespace FormulaOneConsole
             File.Copy(newDbFilePath, oldDbFilePath, true);
         }
 
-        static void ExecuteSqlScript(string sqlScriptName, bool reset = false)
+        static bool ExecuteSqlScript(string sqlScriptName, bool reset = false)
         {
+            bool error = true;
             var fileContent = File.ReadAllText(WORKINGPATH + sqlScriptName);
             fileContent = fileContent.Replace("\r\n", "");
             fileContent = fileContent.Replace("\r", "");
@@ -88,11 +89,13 @@ namespace FormulaOneConsole
                     Console.WriteLine("Errore in esecuzione della query numero: " + i);
                     Console.WriteLine("\tErrore SQL: " + err.Number + " - " + err.Message);
                     nErr++;
+                    error = true;
                 }
             }
             con.Close();
             string finalMessage = nErr == 0 ? "Script " + sqlScriptName + " ended without errors" : "Script ended with " + nErr + " errors";
             if(!reset) Console.WriteLine(finalMessage);
+            return error;
         }
 
         private static void ExecuteQuery(string query, SqlConnection con)
@@ -103,9 +106,17 @@ namespace FormulaOneConsole
 
         private static void ResetDB()
         {
-            Drop();
-            Set();                
-            Console.WriteLine("Reset concluso correttamente");
+            BackupAndRestore("backup database [" + WORKINGPATH + "FormulaOne.mdf] to disk='{0}'", WORKINGPATH + "FormulaOneBackup.mdf", "Backup Created Sucessfully", "Backup Not Created");
+            try
+            {                
+                Drop();
+                Set();
+                Console.WriteLine("Reset concluso correttamente");
+            }
+            catch (Exception)
+            {
+                BackupAndRestore("restore database [" + WORKINGPATH + "FormulaOne.mdf] from disk='{0}'", WORKINGPATH + "FormulaOneBackup.mdf", "DB Restored Sucessfully", "DB Not Restored");
+            }
         }
 
         private static void Drop()
@@ -121,9 +132,32 @@ namespace FormulaOneConsole
 
         private static void Set()
         {
-            ExecuteSqlScript("Countries.sql", true);
-            ExecuteSqlScript("Teams.sql", true);
-            ExecuteSqlScript("Drivers.sql", true);
+            if (ExecuteSqlScript("Countries.sql", true)) throw new Exception("Error during set");
+            if (ExecuteSqlScript("Teams.sql", true)) throw new Exception("Error during set");
+            if (ExecuteSqlScript("Drivers.sql", true)) throw new Exception("Error during set");
+        }
+
+        private static void BackupAndRestore(string cmd, string db, string mex, string errMex)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(CONNECTION_STRING))
+                {
+                    string sqlStmt = string.Format(cmd, db);
+                    using (SqlCommand command = new SqlCommand(sqlStmt, conn))
+                    {
+                        conn.Open();
+                        command.ExecuteNonQuery();
+                        conn.Close();
+
+                        Console.WriteLine(mex);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                Console.WriteLine(errMex);
+            }
         }
     }
 }
