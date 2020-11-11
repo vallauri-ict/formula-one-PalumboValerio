@@ -3,4 +3,4 @@
 
 ### Database Diagram
 
-![This Database](/data/images/Diagram.png)
+[This Diagram](https://i.imgur.com/vrdH3Z5.png)
