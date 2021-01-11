@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Data.SqlClient;
-using NormalExtension;
+using Extension;
+using System.Data;
+using System.Threading;
 
-namespace ConsoleUtilities
+namespace ClassUtilities
 {
     public class Utilities
     {
@@ -11,29 +14,44 @@ namespace ConsoleUtilities
         private string CONNECTION_STRING;
         public string THISDATAPATH;
         public string DB;
-        public Utilities(string wp, string cs, string tdp, string db) 
+
+        public List<string> tableNames;
+        public List<string> fileNames;
+        public Utilities(string wp, string cs, string tdp, string db)
         {
             WORKINGPATH = wp;
             CONNECTION_STRING = cs;
             THISDATAPATH = tdp;
             DB = db;
+            tableNames = TablesNames();
+            fileNames = new List<string>();
         }
 
-        public void copySQLFiles(string targetDirectory)
+        public void CopySQLFiles()
         {
-            string[] fileEntries = Directory.GetFiles(targetDirectory);
+            fileNames.Clear();
+            string[] fileEntries = Directory.GetFiles(THISDATAPATH);
+            string relations = string.Empty;
+
             foreach (string filePath in fileEntries)
             {
                 string fileName = filePath.Split('\\').Last();
-                string newDbFilePath = WORKINGPATH + fileName;
-                string oldDbFilePath = filePath;
-                File.Copy(oldDbFilePath, newDbFilePath, true);
+                string ext = fileName.Split('.').Last();
+                if (ext == "sql")
+                {
+                    string newDbFilePath = WORKINGPATH + fileName;
+                    string oldDbFilePath = filePath;
+                    File.Copy(oldDbFilePath, newDbFilePath, true);
+                    if (!fileName.Contains("Relations"))
+                    {
+                        fileNames.Add(fileName);
+                    }
+                }
             }
         }
 
-        public bool ExecuteSqlScript(string sqlScriptName, bool reset = false)
+        public void ExecuteSqlScript(string sqlScriptName, bool set = false, bool reset = false)
         {
-            bool error = true;
             var fileContent = File.ReadAllText(WORKINGPATH + sqlScriptName);
             fileContent = fileContent.Replace("\r\n", "");
             fileContent = fileContent.Replace("\r", "");
@@ -54,16 +72,28 @@ namespace ConsoleUtilities
                 }
                 catch (SqlException err)
                 {
-                    Console.WriteLine("Errore in esecuzione della query numero: " + i);
-                    Console.WriteLine("\tErrore SQL: " + err.Number + " - " + err.Message);
+                    ConsoleEx.WriteLineRed($"Errore in esecuzione della query numero: {i}\n" +
+                                               $"\tErrore SQL: {err.Number} - {err.Message}", 
+                                               ConsoleColor.Yellow);
                     nErr++;
-                    error = true;
                 }
             }
             con.Close();
-            string finalMessage = nErr == 0 ? "Script " + sqlScriptName + " ended without errors" : "Script ended with " + nErr + " errors";
-            if (!reset) Console.WriteLine(finalMessage);
-            return error;
+
+            if (nErr == 0 && !set)
+            {
+                ConsoleEx.WriteLineGreen($"Script {sqlScriptName} ended without errors", ConsoleColor.Yellow);
+            }
+            else if (nErr != 0 && !set)
+            {
+                ConsoleEx.WriteLineRed($"Script {sqlScriptName} ended with {nErr} errors", ConsoleColor.Yellow);
+
+            }
+            else if (nErr != 0 && set)
+            {
+                ConsoleEx.WriteLineRed("Error during set", ConsoleColor.Yellow);
+                if (reset) throw new Exception("Error during Relations");
+            }
         }
 
         public void ExecuteQuery(string query, SqlConnection con)
@@ -78,8 +108,8 @@ namespace ConsoleUtilities
             try
             {
                 Drop();
-                Set();
-                Console.WriteLine("Reset concluso correttamente");
+                Set(true);
+                ConsoleEx.WriteLineGreen("Reset ended without errors", ConsoleColor.Yellow);
             }
             catch (Exception)
             {
@@ -90,19 +120,38 @@ namespace ConsoleUtilities
         public void Drop()
         {
             var con = new SqlConnection(CONNECTION_STRING);
+            tableNames = TablesNames();
 
             con.Open();
-            ExecuteQuery("DROP TABLE IF EXISTS Country", con);
-            ExecuteQuery("DROP TABLE IF EXISTS Team", con);
-            ExecuteQuery("DROP TABLE IF EXISTS Driver", con);
+
+            try
+            {
+                for (int i = 0; i < tableNames.Count; i++)
+                {
+                    ExecuteQuery($"DROP TABLE IF EXISTS {tableNames[i]}", con);
+                }
+            }
+            catch (Exception)
+            {
+                // Se va in errore per le relazioni, le cancella
+                ExecuteSqlScript("DropRelations.sql");
+                for (int i = 0; i < tableNames.Count; i++)
+                {
+                    ExecuteQuery($"DROP TABLE IF EXISTS {tableNames[i]}", con);
+                }
+            }
             con.Close();
+            ConsoleEx.WriteLineGreen("\nDrop tables ended without errors", ConsoleColor.Yellow);
         }
 
-        public void Set()
+        public void Set(bool reset = false)
         {
-            if (ExecuteSqlScript("Countries.sql", true)) throw new Exception("Error during set");
-            if (ExecuteSqlScript("Teams.sql", true)) throw new Exception("Error during set");
-            if (ExecuteSqlScript("Drivers.sql", true)) throw new Exception("Error during set");
+            for (int i = 0; i < fileNames.Count; i++)
+            {
+                ExecuteSqlScript(fileNames[i], true, reset);
+            }
+            ExecuteSqlScript("Relations.sql", true, reset);
+            ConsoleEx.WriteLineGreen("\nCreate tables ended without errors", ConsoleColor.Yellow);
         }
 
         public void Backup()
@@ -117,7 +166,7 @@ namespace ConsoleUtilities
                     using (SqlCommand multiuser_rollback_dbcomm = new SqlCommand())
                     {
                         multiuser_rollback_dbcomm.Connection = dbConn;
-                        multiuser_rollback_dbcomm.CommandText = @$"ALTER DATABASE {DB} SET MULTI_USER WITH ROLLBACK IMMEDIATE";
+                        multiuser_rollback_dbcomm.CommandText = $@"ALTER DATABASE {DB} SET MULTI_USER WITH ROLLBACK IMMEDIATE";
 
                         multiuser_rollback_dbcomm.ExecuteNonQuery();
                     }
@@ -134,7 +183,7 @@ namespace ConsoleUtilities
                     using (SqlCommand backupcomm = new SqlCommand())
                     {
                         backupcomm.Connection = backupConn;
-                        backupcomm.CommandText = @$"BACKUP DATABASE {DB} TO DISK='{WORKINGPATH}FormulaOneBackup.bak'";
+                        backupcomm.CommandText = $@"BACKUP DATABASE {DB} TO DISK='{WORKINGPATH}FormulaOneBackup.bak'";
                         backupcomm.ExecuteNonQuery();
                     }
                     backupConn.Close();
@@ -153,19 +202,19 @@ namespace ConsoleUtilities
                 using (SqlConnection con = new SqlConnection(CONNECTION_STRING))
                 {
                     con.Open();
-                    string sqlStmt2 = string.Format(@$"ALTER DATABASE {DB} SET SINGLE_USER WITH ROLLBACK IMMEDIATE");
+                    string sqlStmt2 = string.Format($@"ALTER DATABASE {DB} SET SINGLE_USER WITH ROLLBACK IMMEDIATE");
                     SqlCommand bu2 = new SqlCommand(sqlStmt2, con);
                     bu2.ExecuteNonQuery();
 
-                    string sqlStmt3 = @$"USE MASTER RESTORE DATABASE {DB} FROM DISK='{WORKINGPATH}FormulaOneBackup.bak' WITH REPLACE;";
+                    string sqlStmt3 = $@"USE MASTER RESTORE DATABASE {DB} FROM DISK='{WORKINGPATH}FormulaOneBackup.bak' WITH REPLACE;";
                     SqlCommand bu3 = new SqlCommand(sqlStmt3, con);
                     bu3.ExecuteNonQuery();
 
-                    string sqlStmt4 = string.Format(@$"ALTER DATABASE {DB} SET MULTI_USER");
+                    string sqlStmt4 = string.Format($@"ALTER DATABASE {DB} SET MULTI_USER");
                     SqlCommand bu4 = new SqlCommand(sqlStmt4, con);
                     bu4.ExecuteNonQuery();
 
-                    Console.WriteLine("C'è stato un problema con il Reset. Un backup del database è stato ripristinato");
+                    ConsoleEx.WriteLineRed("PROBLEMS WITH RESET. The most recent beckup was restored", ConsoleColor.Yellow);
                     con.Close();
                 }
             }
@@ -173,6 +222,77 @@ namespace ConsoleUtilities
             {
                 Console.WriteLine(ex.ToString());
             }
+        }
+
+        public DataTable GetDataTable(string table)
+        {
+            DataTable retVal = new DataTable();
+            SqlConnection con = new SqlConnection(CONNECTION_STRING);
+            string sql = $"SELECT * FROM {table}";
+            SqlCommand cmd = new SqlCommand(sql, con);
+            con.Open();
+
+            // create data adapter
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            // this will query your database and return the result to your datatable
+            da.Fill(retVal);
+            con.Close();
+            da.Dispose();
+            return retVal;
+        }
+
+        public List<string> TablesNames()
+        {
+            List<string> tables = new List<string>();
+
+            using (SqlConnection connection = new SqlConnection(CONNECTION_STRING))
+            {
+                //Console.WriteLine("\nQuery data example:");
+                //Console.WriteLine("=========================================\n");
+
+                string sql = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES";
+
+                using (SqlCommand command = new SqlCommand(sql, connection))
+                {
+                    connection.Open();
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            //Console.WriteLine("{0}", reader.GetString(0));
+                            tables.Add($"{reader.GetString(0)}");
+                        }
+                    }
+                }
+            }
+            return tables;
+        }
+
+        public void Dots()
+        {
+            while (true)
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    Console.Write('.');
+                    Thread.Sleep(1000);
+                    if (i == 2)
+                    {
+                        Console.Write("\b\b\b   \b\b\b");
+                        i = -1;
+                        Thread.Sleep(1000);
+                    }
+                }
+            }
+        }
+
+        public void LoadingMessage(string message)
+        {
+            Console.Write(message);
+            Thread thread1 = new Thread(Dots);
+            thread1.Start();
+            Console.ReadLine();
+            thread1.Abort();
         }
     }
 }

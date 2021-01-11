@@ -1,9 +1,11 @@
 CREATE TABLE [dbo].[Driver] (
 [driverCode] int IDENTITY,
+[teamCode] int NOT NULL default 1,
+[countryCode] char(2) NOT NULL default 'IT',
 [driverNumber] int NOT NULL default 0,
 [driverFirstname] varchar(128) NOT NULL default '',
 [driverLastname] varchar(128) NOT NULL default '',
-[driverDateOfBirth] date NOT NULL default '01/10/2020',
+[driverDateOfBirth] date NOT NULL default '19850107',
 [driverPlaceOfBirth] varchar(64) NOT NULL default '',
 [driverImage] varchar(200) NOT NULL default '',
 PRIMARY KEY ([driverCode])

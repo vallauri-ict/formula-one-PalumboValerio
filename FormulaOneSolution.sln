@@ -3,14 +3,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29411.108
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FormulaOneConsole", "FormulaOneConsole\FormulaOneConsole.csproj", "{2D217E62-0B92-4C71-8D07-EC7039FA7FDE}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9FACCCC2-2023-4BA7-83C5-F57AC54A6E1C}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormulaOneLibrary", "FormulaOneLibrary\FormulaOneLibrary.csproj", "{D26DABB2-2C60-4452-BED5-EF0FFE253B9C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormulaOneWebForm", "FormulaOneWebForm\FormulaOneWebForm.csproj", "{915F73EA-E3D2-4F3A-8566-5BA3B7C308CF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormulaOneConsole", "FormulaOneConsole\FormulaOneConsole.csproj", "{34727C12-AFF0-4724-AD15-784D8107DE09}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormulaOneLibrary", "FormulaOneLibrary\FormulaOneLibrary.csproj", "{08CA23A2-7D65-4E85-86A2-567CFF1965D9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,14 +20,18 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2D217E62-0B92-4C71-8D07-EC7039FA7FDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2D217E62-0B92-4C71-8D07-EC7039FA7FDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2D217E62-0B92-4C71-8D07-EC7039FA7FDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2D217E62-0B92-4C71-8D07-EC7039FA7FDE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D26DABB2-2C60-4452-BED5-EF0FFE253B9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D26DABB2-2C60-4452-BED5-EF0FFE253B9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D26DABB2-2C60-4452-BED5-EF0FFE253B9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D26DABB2-2C60-4452-BED5-EF0FFE253B9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{915F73EA-E3D2-4F3A-8566-5BA3B7C308CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{915F73EA-E3D2-4F3A-8566-5BA3B7C308CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{915F73EA-E3D2-4F3A-8566-5BA3B7C308CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{915F73EA-E3D2-4F3A-8566-5BA3B7C308CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{34727C12-AFF0-4724-AD15-784D8107DE09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34727C12-AFF0-4724-AD15-784D8107DE09}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34727C12-AFF0-4724-AD15-784D8107DE09}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{34727C12-AFF0-4724-AD15-784D8107DE09}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08CA23A2-7D65-4E85-86A2-567CFF1965D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08CA23A2-7D65-4E85-86A2-567CFF1965D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08CA23A2-7D65-4E85-86A2-567CFF1965D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08CA23A2-7D65-4E85-86A2-567CFF1965D9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
