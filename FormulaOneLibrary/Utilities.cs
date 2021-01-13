@@ -72,7 +72,7 @@ namespace ClassUtilities
                 }
                 catch (SqlException err)
                 {
-                    ConsoleEx.WriteLineRed($"Errore in esecuzione della query numero: {i}\n" +
+                    ConsoleEx.WriteLineRed($"{sqlScriptName}: Errore in esecuzione della query numero: {i}\n" +
                                                $"\tErrore SQL: {err.Number} - {err.Message}", 
                                                ConsoleColor.Yellow);
                     nErr++;
@@ -82,7 +82,7 @@ namespace ClassUtilities
 
             if (nErr == 0 && !set)
             {
-                ConsoleEx.WriteLineGreen($"Script {sqlScriptName} ended without errors", ConsoleColor.Yellow);
+                ConsoleEx.WriteLineGreen($"Script {sqlScriptName} ended", ConsoleColor.Yellow);
             }
             else if (nErr != 0 && !set)
             {
@@ -91,7 +91,7 @@ namespace ClassUtilities
             }
             else if (nErr != 0 && set)
             {
-                ConsoleEx.WriteLineRed("Error during set", ConsoleColor.Yellow);
+                ConsoleEx.WriteLineRed($"Error during set in {sqlScriptName}", ConsoleColor.Yellow);
                 if (reset) throw new Exception("Error during Relations");
             }
         }
@@ -126,22 +126,24 @@ namespace ClassUtilities
 
             try
             {
-                for (int i = 0; i < tableNames.Count; i++)
-                {
-                    ExecuteQuery($"DROP TABLE IF EXISTS {tableNames[i]}", con);
-                }
+                DropTables(con);
             }
             catch (Exception)
             {
                 // Se va in errore per le relazioni, le cancella
                 ExecuteSqlScript("DropRelations.sql");
-                for (int i = 0; i < tableNames.Count; i++)
-                {
-                    ExecuteQuery($"DROP TABLE IF EXISTS {tableNames[i]}", con);
-                }
+                DropTables(con);
             }
             con.Close();
-            ConsoleEx.WriteLineGreen("\nDrop tables ended without errors", ConsoleColor.Yellow);
+            ConsoleEx.WriteLineGreen("\nDrop tables ended", ConsoleColor.Yellow);
+        }
+
+        private void DropTables(SqlConnection con)
+        {
+            for (int i = 0; i < tableNames.Count; i++)
+            {
+                ExecuteQuery($"DROP TABLE IF EXISTS {tableNames[i]}", con);
+            }
         }
 
         public void Set(bool reset = false)
@@ -151,7 +153,7 @@ namespace ClassUtilities
                 ExecuteSqlScript(fileNames[i], true, reset);
             }
             ExecuteSqlScript("Relations.sql", true, reset);
-            ConsoleEx.WriteLineGreen("\nCreate tables ended without errors", ConsoleColor.Yellow);
+            ConsoleEx.WriteLineGreen("\nCreate tables ended", ConsoleColor.Yellow);
         }
 
         public void Backup()

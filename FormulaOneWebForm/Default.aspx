@@ -46,6 +46,7 @@
 
         #dgvNazione{
         width:100%;
+        text-align:center;
         }
 
         .table-condensed tr th {

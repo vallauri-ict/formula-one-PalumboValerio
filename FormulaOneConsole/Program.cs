@@ -16,10 +16,12 @@ namespace FormulaOneConsole
         static void Main(string[] args)
         {
             Utilities utilities = new Utilities(WORKINGPATH, CONNECTION_STRING, THISDATAPATH, DB);
-            char scelta = ' ';
+            char choice = ' ';
+            bool wrongChoice;
 
             do
             {
+                wrongChoice = false;
                 Console.BackgroundColor = ConsoleColor.DarkRed;
                 Console.ForegroundColor = ConsoleColor.DarkGreen;
                 Console.WriteLine("\n*** FORMULA ONE - BATCH SCRIPTS ***\n");
@@ -49,8 +51,8 @@ namespace FormulaOneConsole
                 Console.WriteLine("X - EXIT\n");
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.BackgroundColor = ConsoleColor.Black;
-                scelta = Console.ReadKey(true).KeyChar;
-                switch (scelta)
+                choice = Console.ReadKey(true).KeyChar;
+                switch (choice)
                 {
                     case '1':
                         utilities.CopySQLFiles();
@@ -101,18 +103,31 @@ namespace FormulaOneConsole
                         utilities.ResetDB();
                         break;
                     default:
-                        if (scelta != 'X' && scelta != 'x') Console.WriteLine("\nUncorrect Choice - Try Again\n");
+                        if (choice != 'X' && choice != 'x')
+                        {
+                            Console.WriteLine("\nUncorrect Choice - Try Again\n");
+                            Thread.Sleep(1000);
+                            wrongChoice = true;
+                        }
                         break;
                 }
-                if (scelta != 'X' && scelta != 'x')
+                if (choice != 'X' && choice != 'x' && !wrongChoice)
                 {
                     Thread.Sleep(500);
-                    Console.Write("\n\nPress any keys to continue ");
-                    Console.ReadLine();
+                    ConsoleKeyInfo c;
+                    Console.Write("\n\nPress enter to continue ");
+                    do
+                    {
+                        c = Console.ReadKey();
+                        if(c.Key != ConsoleKey.Enter)
+                        {
+                            Console.Write("\b\b   \b\b");
+                        }
+                    } while (c.Key != ConsoleKey.Enter);
                     //utilities.LoadingMessage("\n\nPress any keys to continue");
-                    Console.Clear();
                 }
-            } while (scelta != 'X' && scelta != 'x');
+                Console.Clear();
+            } while (choice != 'X' && choice != 'x');
         }   
     }
 }

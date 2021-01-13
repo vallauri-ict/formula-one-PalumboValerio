@@ -11,7 +11,7 @@ CREATE TABLE [dbo].[Race] (
 );
 
 INSERT INTO [Race] (raceYear, raceRound, raceName, raceDate, raceTime) 
-VALUES (2021, 3, 'European Grand Prix', '20211011', '1h30m');
+VALUES (2021, 3, 'European Grand Prix', '20201011', '1h30m');
 INSERT INTO [Race] (raceYear, raceRound, raceName, raceDate, raceTime) 
 VALUES (2021, 2, 'Emilia Romagna Grand Prix', '20210807', '1h30m');
 INSERT INTO [Race] (raceYear, raceRound, raceName, raceDate, raceTime) 
