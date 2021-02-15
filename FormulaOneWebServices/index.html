@@ -3,6 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+	<script src = "https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
     <title> FormulaOne - WebForm </title>
     <style>
         body {
@@ -32,7 +34,7 @@
         }
 
 
-        #lstNazione
+        #lst
         {
         color: #fff;
         font-size: 20px;
@@ -70,9 +72,39 @@
         <form id="form1" runat="server">
             <div>
                 <h1>FORMULA ONE - WEB FORM</h1>
-                <!--asp:DropDownList ID="lstNazione" runat="server" OnSelectedIndexChanged="lstNazione_SelectedIndexChanged" AutoPostBack="true" CssClass="form-control"></asp:DropDownList><br /><br />
-                <asp:GridView ID="dgvNazione" runat="server" AutoPostBack="true" CssClass="table table-condensed table-hover"></asp:GridView-->
+                <select id="lst"></select> <input type="text" id="txt">
+                <!--asp:GridView ID="dgvNazione" runat="server" AutoPostBack="true" CssClass="table table-condensed table-hover"></asp:GridView-->
             </div>
         </form>
     </body>
+
+    <script>
+        "use strict";
+        $(document).ready(function (){
+            let list=$("#lst");
+            let txt=$("#txt");
+            let array=["Select an API", "Country", "Circuit", "Team", "Race", "Driver"];
+
+            for (let i = 0; i < array.length; i++) 
+            {
+                let newOption = `<option value='${array[i]}'>${array[i]}</option>`; 
+                list.append(newOption);
+            }
+
+            list.on("change", function () {
+                if($("#lst option[value='Select an API']"))
+                {
+                    $("#lst option[value='Select an API']").remove();
+                }
+                if(txt.val()!="")
+                {
+                    window.location.href=`${window.location.href}api/${$(this).val()}/${txt.val()}`;
+                }
+                else
+                {
+                    window.location.href=`${window.location.href}api/${$(this).val()}`;
+                }
+            })
+        });
+    </script>
 </html>

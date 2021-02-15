@@ -19,4 +19,11 @@
     <ProjectReference Include="..\FormulaOneLibrary\FormulaOneLibrary.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Default.aspx.cs">
+      <SubType>ASPXCodeBehind</SubType>
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
 </Project>
