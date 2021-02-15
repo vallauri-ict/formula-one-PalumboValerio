@@ -5,6 +5,8 @@ using System.Data.SqlClient;
 using Extension;
 using System.Data;
 using System.Threading;
+using System.Text;
+using ClassUtilities.Models;
 
 namespace ClassUtilities
 {
@@ -295,6 +297,315 @@ namespace ClassUtilities
             thread1.Start();
             Console.ReadLine();
             thread1.Abort();
+        }
+
+        public List<Country> getTableCountry()
+        {
+            List<Country> retVal = new List<Country>();
+            using (SqlConnection connection = new SqlConnection(CONNECTION_STRING))
+            {
+                string sql = $"SELECT * FROM Country;";
+
+                using (SqlCommand command = new SqlCommand(sql, connection))
+                {
+                    connection.Open();
+
+                    // create data adapter
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            string countryCode = reader.GetString(0);
+                            string countryName = reader.GetString(1);
+                            retVal.Add(new Country(countryCode, countryName));
+                        }
+                    }
+                }
+            }
+            return retVal;
+        }
+
+        public List<Driver> getTableDriver()
+        {
+            List<Driver> retVal = new List<Driver>();
+            using (SqlConnection connection = new SqlConnection(CONNECTION_STRING))
+            {
+                string sql = $"SELECT * FROM Driver;";
+
+                using (SqlCommand command = new SqlCommand(sql, connection))
+                {
+                    connection.Open();
+
+                    // create data adapter
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int driverCode = reader.GetInt32(3);
+                            string driverFirstname = reader.GetString(4);
+                            string driverLastname = reader.GetString(5);
+                            DateTime driverDateOfBirth = reader.GetDateTime(6);
+                            string driverPlaceOfBirth = reader.GetString(7);
+
+                            retVal.Add(new Driver(driverCode, driverFirstname,
+                                                  driverLastname, driverDateOfBirth,
+                                                  driverPlaceOfBirth));
+                        }
+                    }
+                }
+            }
+            return retVal;
+        }
+
+        public List<Circuit> getTableCircuit()
+        {
+            List<Circuit> retVal = new List<Circuit>();
+            using (SqlConnection connection = new SqlConnection(CONNECTION_STRING))
+            {
+                string sql = $"SELECT * FROM Circuit;";
+
+                using (SqlCommand command = new SqlCommand(sql, connection))
+                {
+                    connection.Open();
+
+                    // create data adapter
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            string circuitRef = reader.GetString(1);
+                            string circuitName = reader.GetString(2);
+                            string circuitLocation = reader.GetString(3);
+                            string circuitCountry = reader.GetString(4);
+
+                            retVal.Add(new Circuit(circuitRef, circuitName,
+                                                   circuitLocation, circuitCountry));
+                        }
+                    }
+                }
+            }
+            return retVal;
+        }
+
+        public List<Race> getTableRace()
+        {
+            List<Race> retVal = new List<Race>();
+            using (SqlConnection connection = new SqlConnection(CONNECTION_STRING))
+            {
+                string sql = $"SELECT * FROM Race;";
+
+                using (SqlCommand command = new SqlCommand(sql, connection))
+                {
+                    connection.Open();
+
+                    // create data adapter
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int raceYear = reader.GetInt32(2);
+                            int raceRound = reader.GetInt32(3);
+                            string raceName = reader.GetString(4);
+                            DateTime raceDate = reader.GetDateTime(5);
+                            string raceTime = reader.GetString(6);
+
+                            retVal.Add(new Race(raceYear, raceRound,
+                                                raceName, raceDate, raceTime));
+                        }
+                    }
+                }
+            }
+            return retVal;
+        }
+
+        public List<Team> getTableTeam()
+        {
+            List<Team> retVal = new List<Team>();
+            using (SqlConnection connection = new SqlConnection(CONNECTION_STRING))
+            {
+                string sql = $"SELECT * FROM Team;";
+
+                using (SqlCommand command = new SqlCommand(sql, connection))
+                {
+                    connection.Open();
+
+                    // create data adapter
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            string teamFullName = reader.GetString(1);
+                            string teamBase = reader.GetString(2);
+                            string teamChief = reader.GetString(3);
+                            string teamPowerUnit = reader.GetString(4);
+                            int teamWorldChampionships = reader.GetInt32(5);
+                            int teamPolePositions = reader.GetInt32(6);
+
+                            retVal.Add(new Team(teamFullName, teamBase,
+                                            teamChief, teamPowerUnit,
+                                            teamWorldChampionships, teamPolePositions));
+                        }
+                    }
+                }
+            }
+            return retVal;
+        }
+
+        public Country getTableCountryByCode(string code)
+        {
+            Country retVal = null;
+            using (SqlConnection connection = new SqlConnection(CONNECTION_STRING))
+            {
+                StringBuilder sb = new StringBuilder();
+                string sql = $"SELECT * FROM Country WHERE countryCode LIKE '{code}';";
+
+                using (SqlCommand command = new SqlCommand(sql, connection))
+                {
+                    connection.Open();
+
+                    // create data adapter
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            string countryCode = reader.GetString(0);
+                            string countryName = reader.GetString(1);
+                            retVal = new Country(countryCode, countryName);
+                        }
+                    }
+                }
+            }
+            return retVal;
+        }
+
+        public Driver getTableDriverByCode(int code)
+        {
+            Driver retVal = null;
+            using (SqlConnection connection = new SqlConnection(CONNECTION_STRING))
+            {
+                StringBuilder sb = new StringBuilder();
+                string sql = $"SELECT * FROM Driver WHERE driverCode = {code};";
+
+                using (SqlCommand command = new SqlCommand(sql, connection))
+                {
+                    connection.Open();
+
+                    // create data adapter
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int driverCode = reader.GetInt32(3);
+                            string driverFirstname = reader.GetString(4);
+                            string driverLastname = reader.GetString(5);
+                            DateTime driverDateOfBirth = reader.GetDateTime(6);
+                            string driverPlaceOfBirth = reader.GetString(7);
+
+                            retVal = new Driver(driverCode, driverFirstname,
+                                              driverLastname, driverDateOfBirth,
+                                              driverPlaceOfBirth);
+                        }
+                    }
+                }
+            }
+            return retVal;
+        }
+
+        public Circuit getTableCircuitByCode(int code)
+        {
+            Circuit retVal = null;
+            using (SqlConnection connection = new SqlConnection(CONNECTION_STRING))
+            {
+                StringBuilder sb = new StringBuilder();
+                string sql = $"SELECT * FROM Circuit WHERE circuitCode = {code};";
+
+                using (SqlCommand command = new SqlCommand(sql, connection))
+                {
+                    connection.Open();
+
+                    // create data adapter
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            string circuitRef = reader.GetString(1);
+                            string circuitName = reader.GetString(2);
+                            string circuitLocation = reader.GetString(3);
+                            string circuitCountry = reader.GetString(4);
+
+                            retVal = new Circuit(circuitRef, circuitName,
+                                               circuitLocation, circuitCountry);
+                        }
+                    }
+                }
+            }
+            return retVal;
+        }
+
+        public Race getTableRaceByCode(int code)
+        {
+            Race retVal = null;
+            using (SqlConnection connection = new SqlConnection(CONNECTION_STRING))
+            {
+                StringBuilder sb = new StringBuilder();
+                string sql = $"SELECT * FROM Race WHERE raceCode = {code};";
+
+                using (SqlCommand command = new SqlCommand(sql, connection))
+                {
+                    connection.Open();
+
+                    // create data adapter
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int raceYear = reader.GetInt32(2);
+                            int raceRound = reader.GetInt32(3);
+                            string raceName = reader.GetString(4);
+                            DateTime raceDate = reader.GetDateTime(5);
+                            string raceTime = reader.GetString(6);
+
+                            retVal = new Race(raceYear, raceRound,
+                                            raceName, raceDate, raceTime);
+                        }
+                    }
+                }
+            }
+            return retVal;
+        }
+
+        public Team getTableTeamByCode(int code)
+        {
+            Team retVal = null;
+            using (SqlConnection connection = new SqlConnection(CONNECTION_STRING))
+            {
+                StringBuilder sb = new StringBuilder();
+                string sql = $"SELECT * FROM Team WHERE teamCode LIKE {code};";
+
+                using (SqlCommand command = new SqlCommand(sql, connection))
+                {
+                    connection.Open();
+
+                    // create data adapter
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            string teamFullName = reader.GetString(1);
+                            string teamBase = reader.GetString(2);
+                            string teamChief = reader.GetString(3);
+                            string teamPowerUnit = reader.GetString(4);
+                            int teamWorldChampionships = reader.GetInt32(5);
+                            int teamPolePositions = reader.GetInt32(6);
+
+                            retVal = new Team(teamFullName, teamBase,
+                                              teamChief, teamPowerUnit,
+                                              teamWorldChampionships, teamPolePositions);
+                        }
+                    }
+                }
+            }
+            return retVal;
         }
     }
 }

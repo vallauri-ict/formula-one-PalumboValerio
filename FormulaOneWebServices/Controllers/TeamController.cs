@@ -1,12 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using FormulaOneDLL;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using ClassUtilities;
+using System.IO;
 
 namespace FormulaOneWebServices.Controllers
 {
@@ -14,35 +13,39 @@ namespace FormulaOneWebServices.Controllers
     [ApiController]
     public class TeamController : ControllerBase
     {
-        // GET: api/<TeamController>
+        public const string WORKINGPATH = @"C:\data\formulaone\";
+        private const string CONNECTION_STRING = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + WORKINGPATH + @"FormulaOne.mdf;Integrated Security=True";
+        public static string THISDATAPATH = $"{Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName}\\Data\\";
+        public static string DB = "[" + WORKINGPATH + "FormulaOne.mdf]";
+        public Utilities utilities = new Utilities(WORKINGPATH, CONNECTION_STRING, THISDATAPATH, DB);
+
+        // GET: api/Country
         [HttpGet]
-        public IEnumerable<string> Get()
+        public List<ClassUtilities.Models.Team> Get()
         {
-            DBUtils db = new DBUtils();
-            db.GetListTeam();
-            return null;
+            return utilities.getTableTeam();
         }
 
-        // GET api/<TeamController>/5
+        // GET: api/Country/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public ClassUtilities.Models.Team Get(int id)
         {
-            return "value";
+            return utilities.getTableTeamByCode(id);
         }
 
-        // POST api/<TeamController>
+        // POST: api/Country
         [HttpPost]
         public void Post([FromBody] string value)
         {
         }
 
-        // PUT api/<TeamController>/5
+        // PUT: api/Country/5
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)
         {
         }
 
-        // DELETE api/<TeamController>/5
+        // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
