@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 	<script src = "https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
-    <title> FormulaOne - WebForm </title>
+    <title> FormulaOne - WebServices </title>
     <style>
         body {
         background-image: url("img/Background.jpg");
@@ -71,7 +71,7 @@
     <body>
         <form id="form1" runat="server">
             <div>
-                <h1>FORMULA ONE - WEB FORM</h1>
+                <h1>FORMULA ONE - WEB SERVICES</h1>
                 <select id="lst"></select> <input type="text" id="txt">
                 <!--asp:GridView ID="dgvNazione" runat="server" AutoPostBack="true" CssClass="table table-condensed table-hover"></asp:GridView-->
             </div>
@@ -96,14 +96,7 @@
                 {
                     $("#lst option[value='Select an API']").remove();
                 }
-                if(txt.val()!="")
-                {
-                    window.location.href=`${window.location.href}api/${$(this).val()}/${txt.val()}`;
-                }
-                else
-                {
-                    window.location.href=`${window.location.href}api/${$(this).val()}`;
-                }
+                window.location.href=`${window.location.href}api/${$(this).val()}/${txt.val()}`;
             })
         });
     </script>
