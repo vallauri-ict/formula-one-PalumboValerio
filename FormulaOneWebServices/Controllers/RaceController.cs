@@ -19,33 +19,33 @@ namespace FormulaOneWebServices.Controllers
         public static string DB = "[" + WORKINGPATH + "FormulaOne.mdf]";
         public Utilities utilities = new Utilities(WORKINGPATH, CONNECTION_STRING, THISDATAPATH, DB);
 
-        // GET: api/Country
+        // GET: api/Race
         [HttpGet]
         public List<ClassUtilities.Models.Race> Get()
         {
             return utilities.getTableRace();
         }
 
-        // GET: api/Country/5
+        // GET: api/Race/N
         [HttpGet("{id}")]
         public ClassUtilities.Models.Race Get(int id)
         {
             return utilities.getTableRaceByCode(id);
         }
 
-        // POST: api/Country
+        // POST: api/Race
         [HttpPost]
         public void Post([FromBody] string value)
         {
         }
 
-        // PUT: api/Country/5
+        // PUT: api/Race/N
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)
         {
         }
 
-        // DELETE: api/ApiWithActions/5
+        // DELETE: api/ApiWithActions/N
         [HttpDelete("{id}")]
         public void Delete(int id)
         {

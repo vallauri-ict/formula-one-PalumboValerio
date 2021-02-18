@@ -28,7 +28,7 @@ namespace FormulaOneWebServices
             return utilities.getTableCountry();
         }
 
-        // GET: api/Country/5
+        // GET: api/Country/IT
         [HttpGet("{id}")]
         public ClassUtilities.Models.Country Get(string id)
         {
@@ -41,13 +41,13 @@ namespace FormulaOneWebServices
         {
         }
 
-        // PUT: api/Country/5
+        // PUT: api/Country/IT
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)
         {
         }
 
-        // DELETE: api/ApiWithActions/5
+        // DELETE: api/ApiWithActions/IT
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
