@@ -3,17 +3,26 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link href="https://fonts.googleapis.com/css2?family=Cookie&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 	<script src = "https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
     <title> FormulaOne - WebServices </title>
     <style>
         body {
+        height: 100vh;
+        background-color: #2d3436;
+        background-image: linear-gradient(315deg, #2d3436 0%, #000000 74%);
+        }
+
+        /*body {
         background-image: url("img/Background.jpg");
 		background-position: center;
 		background-repeat: no-repeat;
 		background-size: cover;
 		background-attachment: fixed;
-        }
+        }*/
 
         h1 {
         text-shadow: 0 1px 0 #ccc,
@@ -33,7 +42,6 @@
         color: red;
         }
 
-
         #lst
         {
         color: #fff;
@@ -49,7 +57,7 @@
         text-align:center;
         }
 
-        .table-condensed tr th {
+        /*.table-condensed tr th {
         border: 0px solid #6e7bd9;
         color: white;
         background-color: #6e7bd9;
@@ -65,15 +73,73 @@
 
         tr:nth-child(odd) {
         background: #fff;
+        }*/
+
+        /* BTN */
+        #btn {
+        background: #222;
+        height: 50px;
+        width: 100px;
+        min-width: 150px;
+        border: none;
+        border-radius: 10px;
+        color: #eee;
+        font-size: 40px;
+        font-family: 'Cookie', cursive;
+        position: relative;
+        transition: 1s;
+        -webkit-tap-highlight-color: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        padding-top: 5px;
+        }
+
+        #btn #circle {
+        width: 5px;
+        height: 5px;
+        background: transparent;
+        border-radius: 50%;
+        position: absolute;
+        top: 0;
+        left: 50%;
+        overflow: hidden;
+        transition: 500ms;
+        }
+
+        .noselect {
+        -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+                -ms-user-select: none;
+                    user-select: none;
+        }
+
+        #btn:hover {
+        background: transparent;
+        }
+
+        #btn:hover #circle {
+        height: 50px;
+        width: 150px;
+        left: 0;
+        border-radius: 0;
+        border-bottom: 2px solid #eee;
         }
     </style>
 </head>
     <body>
-        <form id="form1" runat="server">
-            <div>
-                <h1>FORMULA ONE - WEB SERVICES</h1>
-                <select id="lst"></select> <input type="text" id="txt">
-                <!--asp:GridView ID="dgvNazione" runat="server" AutoPostBack="true" CssClass="table table-condensed table-hover"></asp:GridView-->
+        <form id="form1">
+            <div style="color: white; padding-left: 5%;">
+                <h1>FORMULA ONE - WEB SERVICES</h1><br>
+                <select id="lst"></select> First parameter: <input type="text" id="txt"><br><br>
+                <div id="btn"><span class="noselect">Send</span><div id="circle"></div></div><br>
+
+                <div class="Drvp">Team Name: <input type="text" style="margin-left: 3.3em;"></div>
+                <div class="Drvp">Driver Surname: <input type="text" style="margin-left: 1.7em;"></div>
+                <div class="Drvp">Country: <input type="text" style="margin-left: 5em;"></div>
             </div>
         </form>
     </body>
@@ -83,7 +149,10 @@
         $(document).ready(function (){
             let list=$("#lst");
             let txt=$("#txt");
+            let btnSend=$("#btn");
             let array=["Select an API", "Country", "Circuit", "Team", "Race", "Driver"];
+
+            let drvp=$(".Drvp").hide();
 
             for (let i = 0; i < array.length; i++) 
             {
@@ -91,12 +160,83 @@
                 list.append(newOption);
             }
 
+            btnSend.on("click", function(){
+                let path=`${window.location.href}api/${list.val()}`;
+                let cont=0;
+
+                if($("#lst option[value='Driver']"))
+                {
+                    if(txt.val()!="")
+                    {
+                        path+=`/${txt.val()}`;
+                    }
+                    else
+                    {
+                        for (let i = 0; i < 3; i++) {
+                            if(drvp.eq(i).children().val()!="")
+                            {
+                                path+=`/${drvp.eq(i).children().val()}`;
+                            }
+                            else
+                            {
+                                cont++;
+                                path+=`/none`;
+                            }  
+                        }
+                        if(cont==3)
+                        {
+                            path=`${window.location.href}api/${list.val()}`;
+                        }
+                    }
+                    drvp.show();
+                    drvp.children().val("");
+                }
+                else
+                {
+                    path+=`/${txt.val()}`;
+                }
+
+                txt.val("");
+                txt.prop("disabled", false);
+                window.open(path, "_blank");
+            });
+
+            drvp.children().on("input", function () {
+                if($(this).val()!="")
+                {
+                    drvp.hide();
+                    $(this).parent("div").show();
+                    txt.prop("disabled", true);
+                }
+                else{
+                    drvp.show();
+                    txt.prop("disabled", false);
+                }
+            });
+
+            txt.on("input", function () {
+                if($(this).val()!="")
+                {
+                    drvp.hide();
+                }
+                else{
+                    drvp.show();
+                }
+            });
+
             list.on("change", function () {
                 if($("#lst option[value='Select an API']"))
                 {
                     $("#lst option[value='Select an API']").remove();
                 }
-                window.location.href=`${window.location.href}api/${$(this).val()}/${txt.val()}`;
+                if(list.val()=="Driver")
+                {
+                    drvp.show();
+                }
+                else
+                {
+                    drvp.hide();
+                }
             })
         });
     </script>

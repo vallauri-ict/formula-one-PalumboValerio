@@ -13,7 +13,7 @@ namespace ClassUtilities
     public class Utilities
     {
         public string WORKINGPATH;
-        private string CONNECTION_STRING;
+        public string CONNECTION_STRING;
         public string THISDATAPATH;
         public string DB;
 
@@ -341,13 +341,15 @@ namespace ClassUtilities
                     {
                         while (reader.Read())
                         {
+                            string country = reader.GetString(2);
+                            string team = reader.GetInt32(1).ToString();
                             int driverCode = reader.GetInt32(3);
                             string driverFirstname = reader.GetString(4);
                             string driverLastname = reader.GetString(5);
                             DateTime driverDateOfBirth = reader.GetDateTime(6);
                             string driverPlaceOfBirth = reader.GetString(7);
 
-                            retVal.Add(new Driver(driverCode, driverFirstname,
+                            retVal.Add(new Driver(country, team, driverCode, driverFirstname,
                                                   driverLastname, driverDateOfBirth,
                                                   driverPlaceOfBirth));
                         }
@@ -355,6 +357,102 @@ namespace ClassUtilities
                 }
             }
             return retVal;
+        }
+
+        public List<Driver> detailsDriver(List<Driver> driverList)
+        {
+            using (SqlConnection connection = new SqlConnection(CONNECTION_STRING))
+            {
+                foreach(Driver driver in driverList)
+                {
+                    driver.country = addCountryName(connection, driver);
+                    driver.team = addTeamName(connection, driver);
+                }
+            }
+            return driverList;
+        }
+
+        public string addCountryName(SqlConnection connection, Driver driver)
+        {
+            string sql = $"SELECT * FROM Country WHERE countryCode='{driver.country}';";
+            string country = "";
+
+            using (SqlCommand command = new SqlCommand(sql, connection))
+            {
+                connection.Open();
+
+                // create data adapter
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        country = reader.GetString(1);
+                    }
+                }
+
+                connection.Close();
+            }
+
+            return country;
+        }
+
+        public string addTeamName(SqlConnection connection, Driver driver)
+        {
+            string sql = $"SELECT * FROM Team WHERE teamCode={Convert.ToInt32(driver.team)};";
+            string team = "";
+
+            using (SqlCommand command = new SqlCommand(sql, connection))
+            {
+                connection.Open();
+
+                // create data adapter
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        team = reader.GetString(1);
+                    }
+                }
+
+                connection.Close();
+            }
+            return team;
+        }
+
+        public List<Driver> searchDriver(List<Driver> driverList, string field, string value)
+        {
+            List<Driver> newDriverList = new List<Driver>();
+            foreach (Driver driver in driverList)
+            {
+                switch (field)
+                {
+                    case "teamName":
+                        {
+                            if (driver.team == value)
+                            {
+                                newDriverList.Add(driver);
+                            }
+                        }
+                        break;
+                    case "driverSurname":
+                        {
+                            if (driver.driverLastname == value)
+                            {
+                                newDriverList.Add(driver);
+                            }
+                        }
+                        break;
+                    case "countryName":
+                        {
+                            if (driver.country == value)
+                            {
+                                newDriverList.Add(driver);
+                            }
+                        }
+                        break;
+                }
+            }
+            return newDriverList;
         }
 
         public List<Circuit> getTableCircuit()
@@ -451,7 +549,7 @@ namespace ClassUtilities
             return retVal;
         }
 
-        public Country getTableCountryByCode(string code)
+        public Country getCountryByCode(string code)
         {
             Country retVal = null;
             using (SqlConnection connection = new SqlConnection(CONNECTION_STRING))
@@ -478,7 +576,7 @@ namespace ClassUtilities
             return retVal;
         }
 
-        public Driver getTableDriverByCode(int code)
+        public Driver getDriverByCode(int code)
         {
             Driver retVal = null;
             using (SqlConnection connection = new SqlConnection(CONNECTION_STRING))
@@ -495,13 +593,15 @@ namespace ClassUtilities
                     {
                         while (reader.Read())
                         {
+                            string team = reader.GetInt32(1).ToString();
+                            string country = reader.GetString(2);
                             int driverCode = reader.GetInt32(3);
                             string driverFirstname = reader.GetString(4);
                             string driverLastname = reader.GetString(5);
                             DateTime driverDateOfBirth = reader.GetDateTime(6);
                             string driverPlaceOfBirth = reader.GetString(7);
 
-                            retVal = new Driver(driverCode, driverFirstname,
+                            retVal = new Driver(country, team, driverCode, driverFirstname,
                                               driverLastname, driverDateOfBirth,
                                               driverPlaceOfBirth);
                         }

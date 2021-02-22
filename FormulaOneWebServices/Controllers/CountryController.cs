@@ -32,7 +32,7 @@ namespace FormulaOneWebServices
         [HttpGet("{id}")]
         public ClassUtilities.Models.Country Get(string id)
         {
-            return utilities.getTableCountryByCode(id.ToUpper());
+            return utilities.getCountryByCode(id.ToUpper());
         }
 
         // POST: api/Country

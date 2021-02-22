@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ClassUtilities;
 using System.IO;
+using System.Data.SqlClient;
 
 namespace FormulaOneWebServices.Controllers
 {
@@ -23,15 +24,35 @@ namespace FormulaOneWebServices.Controllers
         [HttpGet]
         public List<ClassUtilities.Models.Driver> Get()
         {
-            return utilities.getTableDriver();
+            List<ClassUtilities.Models.Driver> driverList = utilities.getTableDriver();
+            return utilities.detailsDriver(driverList);
         }
 
         // GET: api/Driver/N
-        [HttpGet("{id}")]
+        [HttpGet("{id}/{teamName}/{driverSurname}/{countryName}")]
         public ClassUtilities.Models.Driver Get(int id)
         {
-            return utilities.getTableDriverByCode(id);
+            SqlConnection connection = new SqlConnection(CONNECTION_STRING);
+            ClassUtilities.Models.Driver driver = utilities.getDriverByCode(id);
+            driver.country = utilities.addCountryName(connection, driver);
+            driver.team = utilities.addTeamName(connection, driver);
+            return driver;
         }
+
+        // GET: api/Driver/teamName/driverSurname/countryName
+        [HttpGet("{teamName}/{driverSurname}/{countryName}")]
+        public List<ClassUtilities.Models.Driver> Get(string teamName, string driverSurname, string countryName)
+        {
+            List<ClassUtilities.Models.Driver> driverList = utilities.getTableDriver();
+            driverList = utilities.detailsDriver(driverList);
+            if (teamName != "none")
+                return utilities.searchDriver(driverList, "teamName", teamName);
+            else if(driverSurname != "none")
+                return utilities.searchDriver(driverList, "driverSurname", driverSurname);
+            else
+                return utilities.searchDriver(driverList, "countryName", countryName);
+        }
+
 
         // POST: api/Driver
         [HttpPost]
