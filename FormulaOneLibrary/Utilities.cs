@@ -341,15 +341,15 @@ namespace ClassUtilities
                     {
                         while (reader.Read())
                         {
-                            string country = reader.GetString(2);
+                            int driverCode = reader.GetInt32(0);
                             string team = reader.GetInt32(1).ToString();
-                            int driverCode = reader.GetInt32(3);
-                            string driverFirstname = reader.GetString(4);
-                            string driverLastname = reader.GetString(5);
-                            DateTime driverDateOfBirth = reader.GetDateTime(6);
-                            string driverPlaceOfBirth = reader.GetString(7);
+                            string country = reader.GetString(2);
+                            string driverFirstname = reader.GetString(3);
+                            string driverLastname = reader.GetString(4);
+                            DateTime driverDateOfBirth = reader.GetDateTime(5);
+                            string driverPlaceOfBirth = reader.GetString(6);
 
-                            retVal.Add(new Driver(country, team, driverCode, driverFirstname,
+                            retVal.Add(new Driver(driverCode, team, country, driverFirstname,
                                                   driverLastname, driverDateOfBirth,
                                                   driverPlaceOfBirth));
                         }
@@ -593,15 +593,15 @@ namespace ClassUtilities
                     {
                         while (reader.Read())
                         {
+                            int driverCode = reader.GetInt32(0);
                             string team = reader.GetInt32(1).ToString();
                             string country = reader.GetString(2);
-                            int driverCode = reader.GetInt32(3);
-                            string driverFirstname = reader.GetString(4);
-                            string driverLastname = reader.GetString(5);
-                            DateTime driverDateOfBirth = reader.GetDateTime(6);
-                            string driverPlaceOfBirth = reader.GetString(7);
+                            string driverFirstname = reader.GetString(3);
+                            string driverLastname = reader.GetString(4);
+                            DateTime driverDateOfBirth = reader.GetDateTime(5);
+                            string driverPlaceOfBirth = reader.GetString(6);
 
-                            retVal = new Driver(country, team, driverCode, driverFirstname,
+                            retVal = new Driver(driverCode, team, country, driverFirstname,
                                               driverLastname, driverDateOfBirth,
                                               driverPlaceOfBirth);
                         }
