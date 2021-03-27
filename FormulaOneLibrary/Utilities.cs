@@ -343,13 +343,12 @@ namespace ClassUtilities
                         {
                             string country = reader.GetString(2);
                             string team = reader.GetInt32(1).ToString();
-                            int driverCode = reader.GetInt32(3);
-                            string driverFirstname = reader.GetString(4);
-                            string driverLastname = reader.GetString(5);
-                            DateTime driverDateOfBirth = reader.GetDateTime(6);
-                            string driverPlaceOfBirth = reader.GetString(7);
+                            string driverFirstname = reader.GetString(3);
+                            string driverLastname = reader.GetString(4);
+                            DateTime driverDateOfBirth = reader.GetDateTime(5);
+                            string driverPlaceOfBirth = reader.GetString(6);
 
-                            retVal.Add(new Driver(country, team, driverCode, driverFirstname,
+                            retVal.Add(new Driver(country, team, driverFirstname,
                                                   driverLastname, driverDateOfBirth,
                                                   driverPlaceOfBirth));
                         }
@@ -549,6 +548,195 @@ namespace ClassUtilities
             return retVal;
         }
 
+        public List<Result> getTableResult()
+        {
+            List<Result> retVal = new List<Result>();
+            using (SqlConnection connection = new SqlConnection(CONNECTION_STRING))
+            {
+                string sql = $"SELECT * FROM Result;";
+
+                using (SqlCommand command = new SqlCommand(sql, connection))
+                {
+                    connection.Open();
+
+                    // create data adapter
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int resultCode = reader.GetInt32(0);
+                            int raceCode = reader.GetInt32(1);
+                            int driverCode = reader.GetInt32(2);
+                            int teamCode = reader.GetInt32(3);
+                            string resultPosition = reader.GetString(4);
+                            string resultTime = reader.GetString(5);
+                            int resultNlap = reader.GetInt32(6);
+                            int resultPoints = reader.GetInt32(7);
+                            int resultFastestLap = reader.GetInt32(8);
+                            string resultFastestLapTime = reader.GetString(9);
+
+                            retVal.Add(new Result(resultCode, raceCode, driverCode, teamCode, resultPosition, resultTime, resultNlap, resultPoints, resultFastestLap, resultFastestLapTime));
+                        }
+                    }
+                }
+            }
+            return retVal;
+        }
+
+        public Result getResultByCode(int code)
+        {
+            Result retVal = null;
+            using (SqlConnection connection = new SqlConnection(CONNECTION_STRING))
+            {
+                StringBuilder sb = new StringBuilder();
+                string sql = $"SELECT * FROM Result WHERE resultCode = {code};";
+
+                using (SqlCommand command = new SqlCommand(sql, connection))
+                {
+                    connection.Open();
+
+                    // create data adapter
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int resultCode = reader.GetInt32(0);
+                            int raceCode = reader.GetInt32(1);
+                            int driverCode = reader.GetInt32(2);
+                            int teamCode = reader.GetInt32(3);
+                            string resultPosition = reader.GetString(4);
+                            string resultTime = reader.GetString(5);
+                            int resultNlap = reader.GetInt32(6);
+                            int resultPoints = reader.GetInt32(7);
+                            int resultFastestLap = reader.GetInt32(8);
+                            string resultFastestLapTime = reader.GetString(9);
+                            retVal = new Result(resultCode, raceCode, driverCode, teamCode, resultPosition, resultTime, resultNlap, resultPoints, resultFastestLap, resultFastestLapTime);
+                        }
+                    }
+                }
+            }
+            return retVal;
+        }
+
+        public List<TeamsResult> getTableTeamsResult()
+        {
+            List<TeamsResult> retVal = new List<TeamsResult>();
+            using (SqlConnection connection = new SqlConnection(CONNECTION_STRING))
+            {
+                string sql = $"SELECT * FROM TeamsResult;";
+
+                using (SqlCommand command = new SqlCommand(sql, connection))
+                {
+                    connection.Open();
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int teamResultsCode = reader.GetInt32(0);
+                            int raceCode = reader.GetInt32(1);
+                            int teamCode = reader.GetInt32(2);
+                            int points = reader.GetInt32(3);
+
+                            retVal.Add(new TeamsResult(teamResultsCode, raceCode, teamCode, points));
+                        }
+                    }
+                }
+            }
+            return retVal;
+        }
+
+        public TeamsResult getTeamsResultByCode(int code)
+        {
+            TeamsResult retVal = null;
+            using (SqlConnection connection = new SqlConnection(CONNECTION_STRING))
+            {
+                StringBuilder sb = new StringBuilder();
+                string sql = $"SELECT * FROM TeamsResult WHERE teamResultsCode = {code};";
+
+                using (SqlCommand command = new SqlCommand(sql, connection))
+                {
+                    connection.Open();
+
+                    // create data adapter
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int raceCode = reader.GetInt32(1);
+                            int teamCode = reader.GetInt32(2);
+                            int points = reader.GetInt32(3);
+
+                            retVal = new TeamsResult(code, raceCode, teamCode, points);
+                        }
+                    }
+                }
+            }
+            return retVal;
+        }
+
+        public List<int> getDriverCodes()
+        {
+            List<int> driverCodes = new List<int>();
+
+            using (SqlConnection connection = new SqlConnection(CONNECTION_STRING))
+            {
+                string sql = "SELECT * FROM GetDriverCodes();";
+
+                using (SqlCommand command = new SqlCommand(sql, connection))
+                {
+                    connection.Open();
+
+                    // create data adapter
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            driverCodes.Add(reader.GetInt32(0));
+                        }
+                    }
+                }
+            }
+            return driverCodes;
+        }
+
+        public List<Stats> getTableStats(List<int> driverCodes)
+        {
+            List<Stats> retVal = new List<Stats>();
+
+            foreach (int code in driverCodes)
+            {
+                using (SqlConnection connection = new SqlConnection(CONNECTION_STRING))
+                {
+                    string sql = $"EXEC DriverResults @id={code}";
+
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+                        connection.Open();
+
+                        // create data adapter
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                int totPoints = reader.GetInt32(1);
+                                decimal averagePoints = reader.GetDecimal(2);
+                                int nFastestLap = reader.GetInt32(3);
+                                int nFirstPlace = reader.GetInt32(4);
+                                int nSecondPlace = reader.GetInt32(5);
+                                int nThirdPlace = reader.GetInt32(6);
+                                int nPodius = reader.GetInt32(7);
+
+                                retVal.Add(new Stats(code, totPoints, averagePoints, nFastestLap,
+                                                nFirstPlace, nSecondPlace, nThirdPlace, nPodius));
+                            }
+                        }
+                    }
+                }
+            }
+            return retVal;
+        }
+
         public Country getCountryByCode(string code)
         {
             Country retVal = null;
@@ -595,13 +783,12 @@ namespace ClassUtilities
                         {
                             string team = reader.GetInt32(1).ToString();
                             string country = reader.GetString(2);
-                            int driverCode = reader.GetInt32(3);
-                            string driverFirstname = reader.GetString(4);
-                            string driverLastname = reader.GetString(5);
-                            DateTime driverDateOfBirth = reader.GetDateTime(6);
-                            string driverPlaceOfBirth = reader.GetString(7);
+                            string driverFirstname = reader.GetString(3);
+                            string driverLastname = reader.GetString(4);
+                            DateTime driverDateOfBirth = reader.GetDateTime(5);
+                            string driverPlaceOfBirth = reader.GetString(6);
 
-                            retVal = new Driver(country, team, driverCode, driverFirstname,
+                            retVal = new Driver(country, team, driverFirstname,
                                               driverLastname, driverDateOfBirth,
                                               driverPlaceOfBirth);
                         }

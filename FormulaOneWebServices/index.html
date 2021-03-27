@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
@@ -149,8 +149,8 @@
         $(document).ready(function (){
             let list=$("#lst");
             let txt=$("#txt");
-            let btnSend=$("#btn");
-            let array=["Select an API", "Country", "Circuit", "Team", "Race", "Driver"];
+            let btnSend = $("#btn").hide();
+            let array=["Select an API", "Country", "Circuit", "Team", "Race", "Driver", "Result", "TeamsResult", "Stats"];
 
             let drvp=$(".Drvp").hide();
 
@@ -164,7 +164,7 @@
                 let path=`${window.location.href}api/${list.val()}`;
                 let cont=0;
 
-                if($("#lst option[value='Driver']"))
+                if (list.val() == "Driver")
                 {
                     if(txt.val()!="")
                     {
@@ -215,12 +215,16 @@
             });
 
             txt.on("input", function () {
-                if($(this).val()!="")
+                if (list.val() == "Driver")
                 {
-                    drvp.hide();
-                }
-                else{
-                    drvp.show();
+                    if ($(this).val() != "")
+                    {
+                        drvp.hide();
+                    }
+                    else
+                    {
+                        drvp.show();
+                    }
                 }
             });
 
@@ -228,6 +232,7 @@
                 if($("#lst option[value='Select an API']"))
                 {
                     $("#lst option[value='Select an API']").remove();
+                    btnSend.show();
                 }
                 if(list.val()=="Driver")
                 {

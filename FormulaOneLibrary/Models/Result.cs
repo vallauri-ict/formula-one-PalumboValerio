@@ -8,20 +8,29 @@ namespace ClassUtilities.Models
 {
     public class Result
     {
-        //public Result(string raceYear, string raceRound, string raceName,
-        //            string raceDate, string raceTime)
-        //{
-        //    this.raceYear = raceYear;
-        //    this.raceRound = raceRound;
-        //    this.raceName = raceName;
-        //    this.raceDate = raceDate;
-        //    this.raceTime = raceTime;
-        //}
+        public Result(int resultCode, int raceCode, int driverCode, int teamCode, string resultPosition, string resultTime, int resultNlap, int resultPoints, int resultFastestLap, string resultFastestLapTime)
+        {
+            this.resultCode = resultCode;
+            this.raceCode = raceCode;
+            this.driverCode = driverCode;
+            this.teamCode = teamCode;
+            this.resultPosition = resultPosition;
+            this.resultTime = resultTime;
+            this.resultNlap = resultNlap;
+            this.resultPoints = resultPoints;
+            this.resultFastestLap = resultFastestLap;
+            this.resultFastestLapTime = resultFastestLapTime;
+        }
 
-        //public string raceYear { get; set; }
-        //public string raceRound { get; set; }
-        //public string raceName { get; set; }
-        //public string raceDate { get; set; }
-        //public string raceTime { get; set; }
+        public int resultCode { get; set; }
+        public int raceCode { get; set; }
+        public int driverCode { get; set; }
+        public int teamCode { get; set; }
+        public string resultPosition { get; set; }
+        public string resultTime { get; set; }
+        public int resultNlap { get; set; }
+        public int resultPoints { get; set; }
+        public int resultFastestLap { get; set; }
+        public string resultFastestLapTime { get; set; }
     }
 }

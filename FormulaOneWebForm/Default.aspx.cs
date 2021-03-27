@@ -6,7 +6,9 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.IO;
+using System.Net;
 using ClassUtilities;
+using ClassUtilities.Models;
 
 namespace FormulaOneWebForm
 {
@@ -45,6 +47,26 @@ namespace FormulaOneWebForm
             }
             dgvNazione.DataSource = utilities.GetDataTable(lstNazione.SelectedValue);
             dgvNazione.DataBind();
+        }
+
+        public void GetCountry(string isoCode = "")
+        {
+            HttpWebRequest apiRequest = WebRequest.Create($"http://localhost:44308/api/Country/{isoCode}") as HttpWebRequest;
+            string apiResponse = "";
+            try
+            {
+                using (HttpWebResponse response = apiRequest.GetResponse() as HttpWebResponse)
+                {
+                    StreamReader reader = new StreamReader(response.GetResponseStream());
+                    apiResponse = reader.ReadToEnd();
+                    Country[] country = Newtonsoft.Json.JsonConvert.DeserializeObject<Country[]>(apiResponse);
+                    // Dentro country ci sono i country
+                }
+            }
+            catch (WebException ex)
+            {
+                Console.Write(ex.Message);
+            }
         }
     }
 }

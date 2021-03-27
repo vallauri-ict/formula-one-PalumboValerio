@@ -48,6 +48,7 @@
     <Compile Include="Models\Driver.cs" />
     <Compile Include="Models\Race.cs" />
     <Compile Include="Models\Result.cs" />
+    <Compile Include="Models\Stats.cs" />
     <Compile Include="Models\Team.cs" />
     <Compile Include="Models\TeamsResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

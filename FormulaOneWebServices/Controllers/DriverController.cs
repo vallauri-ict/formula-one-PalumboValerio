@@ -29,7 +29,7 @@ namespace FormulaOneWebServices.Controllers
         }
 
         // GET: api/Driver/N
-        [HttpGet("{id}/{teamName}/{driverSurname}/{countryName}")]
+        [HttpGet("{id}")]
         public ClassUtilities.Models.Driver Get(int id)
         {
             SqlConnection connection = new SqlConnection(CONNECTION_STRING);
