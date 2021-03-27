@@ -8,7 +8,7 @@ namespace ClassUtilities.Models
 {
     public class Driver
     {
-        public Driver(string country, string team, string driverFirstname, string driverLastname, 
+        public Driver(string country, string team, string driverFirstname, string driverLastname,
                       DateTime driverDateOfBirth, string driverPlaceOfBirth)
         {
             this.country = country;

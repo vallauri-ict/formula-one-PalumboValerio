@@ -341,14 +341,22 @@ namespace ClassUtilities
                     {
                         while (reader.Read())
                         {
-                            string country = reader.GetString(2);
+                            int driverCode = reader.GetInt32(0);
                             string team = reader.GetInt32(1).ToString();
+<<<<<<< HEAD
+=======
+                            string country = reader.GetString(2);
+>>>>>>> 321dc945d73c851274b5ebe22b68af370dbf0c13
                             string driverFirstname = reader.GetString(3);
                             string driverLastname = reader.GetString(4);
                             DateTime driverDateOfBirth = reader.GetDateTime(5);
                             string driverPlaceOfBirth = reader.GetString(6);
 
+<<<<<<< HEAD
                             retVal.Add(new Driver(country, team, driverFirstname,
+=======
+                            retVal.Add(new Driver(driverCode, team, country, driverFirstname,
+>>>>>>> 321dc945d73c851274b5ebe22b68af370dbf0c13
                                                   driverLastname, driverDateOfBirth,
                                                   driverPlaceOfBirth));
                         }
@@ -781,6 +789,7 @@ namespace ClassUtilities
                     {
                         while (reader.Read())
                         {
+                            int driverCode = reader.GetInt32(0);
                             string team = reader.GetInt32(1).ToString();
                             string country = reader.GetString(2);
                             string driverFirstname = reader.GetString(3);
@@ -788,7 +797,11 @@ namespace ClassUtilities
                             DateTime driverDateOfBirth = reader.GetDateTime(5);
                             string driverPlaceOfBirth = reader.GetString(6);
 
+<<<<<<< HEAD
                             retVal = new Driver(country, team, driverFirstname,
+=======
+                            retVal = new Driver(driverCode, team, country, driverFirstname,
+>>>>>>> 321dc945d73c851274b5ebe22b68af370dbf0c13
                                               driverLastname, driverDateOfBirth,
                                               driverPlaceOfBirth);
                         }
