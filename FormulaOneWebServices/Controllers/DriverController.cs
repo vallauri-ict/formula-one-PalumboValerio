@@ -34,8 +34,8 @@ namespace FormulaOneWebServices.Controllers
         {
             SqlConnection connection = new SqlConnection(CONNECTION_STRING);
             ClassUtilities.Models.Driver driver = utilities.getDriverByCode(id);
-            driver.country = utilities.addCountryName(connection, driver);
-            driver.team = utilities.addTeamName(connection, driver);
+            driver.country = utilities.getNameFromCode(connection, $"SELECT * FROM Country WHERE countryCode='{driver.country}';", 1);
+            driver.team = utilities.getNameFromCode(connection, $"SELECT * FROM Team WHERE teamCode={driver.team};", 1);
             return driver;
         }
 

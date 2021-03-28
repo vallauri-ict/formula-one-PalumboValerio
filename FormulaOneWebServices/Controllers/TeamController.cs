@@ -30,7 +30,7 @@ namespace FormulaOneWebServices.Controllers
         [HttpGet("{id}")]
         public ClassUtilities.Models.Team Get(int id)
         {
-            return utilities.getTableTeamByCode(id);
+            return utilities.getTeamByCode(id);
         }
 
         // POST: api/Team

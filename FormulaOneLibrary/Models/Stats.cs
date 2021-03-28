@@ -8,10 +8,10 @@ namespace ClassUtilities.Models
 {
     public class Stats
     {
-        public Stats(int driverCode, int totPoints, decimal averagePoints, int nFastestLap, 
+        public Stats(string driver, int totPoints, decimal averagePoints, int nFastestLap, 
                      int nFirstPlace, int nSecondPlace, int nThirdPlace, int nPodius)
         {
-            this.driverCode = driverCode;
+            this.driver = driver;
             this.totPoints = totPoints;
             this.averagePoints = averagePoints;
             this.nFastestLap = nFastestLap;
@@ -21,7 +21,7 @@ namespace ClassUtilities.Models
             this.nPodius = nPodius;
         }
 
-        public int driverCode { get; set; }
+        public string driver { get; set; }
         public int totPoints { get; set; }
         public decimal averagePoints { get; set; }
         public int nFastestLap { get; set; }

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ClassUtilities;
 using System.IO;
+using System.Data.SqlClient;
 
 namespace FormulaOneWebServices.Controllers
 {
@@ -23,14 +24,18 @@ namespace FormulaOneWebServices.Controllers
         [HttpGet]
         public List<ClassUtilities.Models.Race> Get()
         {
-            return utilities.getTableRace();
+            List<ClassUtilities.Models.Race> raceList = utilities.getTableRace();
+            return utilities.detailsRace(raceList);
         }
 
         // GET: api/Race/N
         [HttpGet("{id}")]
         public ClassUtilities.Models.Race Get(int id)
         {
-            return utilities.getTableRaceByCode(id);
+            SqlConnection connection = new SqlConnection(CONNECTION_STRING);
+            ClassUtilities.Models.Race race = utilities.getRaceByCode(id);
+            race.circuit = utilities.getNameFromCode(connection, $"SELECT * FROM Circuit WHERE circuitCode={race.circuit};", 2);
+            return race;
         }
 
         // POST: api/Race

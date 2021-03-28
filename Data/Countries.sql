@@ -69,6 +69,7 @@ INSERT INTO [Country] (countryCode, countryName) VALUES ('TP', 'East Timor');
 INSERT INTO [Country] (countryCode, countryName) VALUES ('EC', 'Ecuador');
 INSERT INTO [Country] (countryCode, countryName) VALUES ('EG', 'Egypt');
 INSERT INTO [Country] (countryCode, countryName) VALUES ('SV', 'El Salvador');
+INSERT INTO [Country] (countryCode, countryName) VALUES ('EN', 'England');
 INSERT INTO [Country] (countryCode, countryName) VALUES ('GQ', 'Equatorial Guinea');
 INSERT INTO [Country] (countryCode, countryName) VALUES ('ER', 'Eritrea');
 INSERT INTO [Country] (countryCode, countryName) VALUES ('EE', 'Estonia');
