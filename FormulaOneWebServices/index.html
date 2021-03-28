@@ -165,6 +165,9 @@
             txt.prop("disabled", false);
 
             let request=makeRequest("GET", path);
+            request.fail(function(jqXHR, testStatus, strError){
+                console.log("Error");
+            })
             request.done(function(data){
                 $("#thData").empty();
                 $("#tbData").empty();
