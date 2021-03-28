@@ -8,12 +8,11 @@ namespace ClassUtilities.Models
 {
     public class Result
     {
-        public Result(int resultCode, int raceCode, int driverCode, int teamCode, string resultPosition, string resultTime, int resultNlap, int resultPoints, int resultFastestLap, string resultFastestLapTime)
+        public Result(string race, string driver, string team, string resultPosition, string resultTime, int resultNlap, int resultPoints, int resultFastestLap, string resultFastestLapTime)
         {
-            this.resultCode = resultCode;
-            this.raceCode = raceCode;
-            this.driverCode = driverCode;
-            this.teamCode = teamCode;
+            this.race = race;
+            this.driver = driver;
+            this.team = team;
             this.resultPosition = resultPosition;
             this.resultTime = resultTime;
             this.resultNlap = resultNlap;
@@ -22,10 +21,9 @@ namespace ClassUtilities.Models
             this.resultFastestLapTime = resultFastestLapTime;
         }
 
-        public int resultCode { get; set; }
-        public int raceCode { get; set; }
-        public int driverCode { get; set; }
-        public int teamCode { get; set; }
+        public string race { get; set; }
+        public string driver { get; set; }
+        public string team { get; set; }
         public string resultPosition { get; set; }
         public string resultTime { get; set; }
         public int resultNlap { get; set; }

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ClassUtilities;
 using System.Data;
+using System.Data.SqlClient;
 
 namespace FormulaOneWebServices
 {
@@ -25,14 +26,20 @@ namespace FormulaOneWebServices
         [HttpGet]
         public List<ClassUtilities.Models.Result> Get()
         {
-            return utilities.getTableResult();
+            List<ClassUtilities.Models.Result> resultList = utilities.getTableResult();
+            return utilities.detailsResult(resultList);
         }
 
         // GET: api/Result/id
         [HttpGet("{id}")]
         public ClassUtilities.Models.Result Get(int id)
         {
-            return utilities.getResultByCode(id);
+            SqlConnection connection = new SqlConnection(CONNECTION_STRING);
+            ClassUtilities.Models.Result result = utilities.getResultByCode(id);
+            result.race = utilities.getNameFromCode(connection, $"SELECT * FROM Race WHERE raceCode={result.race};", 4);
+            result.driver = utilities.getNameFromCode(connection, $"SELECT * FROM Driver WHERE driverCode={result.driver};", 4);
+            result.team = utilities.getNameFromCode(connection, $"SELECT * FROM Team WHERE teamCode={result.team};", 1);
+            return result;
         }
 
         // POST: api/Country

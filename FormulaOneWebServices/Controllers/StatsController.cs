@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ClassUtilities;
 using System.IO;
+using System.Data.SqlClient;
 
 namespace FormulaOneWebServices.Controllers
 {
@@ -24,16 +25,36 @@ namespace FormulaOneWebServices.Controllers
         public List<ClassUtilities.Models.Stats> Get()
         {
             List<int> driverCodes = utilities.getDriverCodes();
-            return utilities.getTableStats(driverCodes);
+            return utilities.detailsStats(utilities.getTableStats(driverCodes));
         }
 
-        // POST: api/Race
+        // GET: api/Stats/id
+        [HttpGet("{id}")]
+        public ClassUtilities.Models.Stats Get(int id)
+        {
+            SqlConnection connection = new SqlConnection(CONNECTION_STRING);
+            List<int> driverCodes = utilities.getDriverCodes();
+            List<ClassUtilities.Models.Stats> statsList = utilities.getTableStats(driverCodes);
+            ClassUtilities.Models.Stats stat = null;
+            foreach (var stats in statsList)
+            {
+                if(stats.driver == id.ToString())
+                {
+                    stat = stats;
+                    stat.driver = utilities.getNameFromCode(connection, $"SELECT * FROM Driver WHERE driverCode={stat.driver};", 4);
+                    break;
+                }
+            }
+            return stat;
+        }
+
+        // POST: api/Stats
         [HttpPost]
         public void Post([FromBody] string value)
         {
         }
 
-        // PUT: api/Race/N
+        // PUT: api/Stats/N
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)
         {

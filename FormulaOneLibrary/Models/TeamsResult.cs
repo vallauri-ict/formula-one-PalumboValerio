@@ -8,17 +8,15 @@ namespace ClassUtilities.Models
 {
     public class TeamsResult
     {
-        public TeamsResult(int teamResultsCode, int teamCode, int raceCode, int points)
+        public TeamsResult(string team, string race, int points)
         {
-            this.teamResultsCode = teamResultsCode;
-            this.raceCode = raceCode;
-            this.teamCode = teamCode;
+            this.race = race;
+            this.team = team;
             this.points = points;
         }
 
-        public int teamResultsCode { get; set; }
-        public int raceCode { get; set; }
-        public int teamCode { get; set; }
+        public string race { get; set; }
+        public string team { get; set; }
         public int points { get; set; }
     }
 }

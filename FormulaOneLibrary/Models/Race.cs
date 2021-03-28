@@ -8,12 +8,13 @@ namespace ClassUtilities.Models
 {
     public class Race
     {
-        public Race(int raceYear, int raceRound, string raceName,
+        public Race(int raceYear, int raceRound, string raceName, string circuit,
                     DateTime raceDate, string raceTime)
         {
             this.raceYear = raceYear;
             this.raceRound = raceRound;
             this.raceName = raceName;
+            this.circuit = circuit;
             this.raceDate = raceDate;
             this.raceTime = raceTime;
         }
@@ -21,6 +22,7 @@ namespace ClassUtilities.Models
         public int raceYear { get; set; }
         public int raceRound { get; set; }
         public string raceName { get; set; }
+        public string circuit { get; set; }
         public DateTime raceDate { get; set; }
         public string raceTime { get; set; }
     }

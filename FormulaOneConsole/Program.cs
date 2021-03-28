@@ -39,6 +39,7 @@ namespace FormulaOneConsole
                 Console.WriteLine("------------------");
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine("a - Create all tables");
+                Console.WriteLine("f - Create procedures");
                 Console.ForegroundColor = ConsoleColor.DarkRed;
                 Console.WriteLine("d - Drop all tables");
                 Console.WriteLine("p - Drop all relations");
@@ -89,6 +90,10 @@ namespace FormulaOneConsole
                     case 'a':
                         utilities.CopySQLFiles();
                         utilities.Set();
+                        break;
+                    case 'f':
+                        utilities.CopySQLFiles();
+                        utilities.procedure();
                         break;
                     case 'd':
                         utilities.CopySQLFiles();

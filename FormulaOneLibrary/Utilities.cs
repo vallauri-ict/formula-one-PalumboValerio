@@ -33,7 +33,6 @@ namespace ClassUtilities
         {
             fileNames.Clear();
             string[] fileEntries = Directory.GetFiles(THISDATAPATH);
-            string relations = string.Empty;
 
             foreach (string filePath in fileEntries)
             {
@@ -138,6 +137,12 @@ namespace ClassUtilities
             }
             con.Close();
             ConsoleEx.WriteLineGreen("\nDrop tables ended", ConsoleColor.Yellow);
+        }
+
+        public void procedure()
+        {
+            ExecuteSqlScript("DriverResults.sql");
+            ExecuteSqlScript("GetDriverCodes.sql");
         }
 
         private void DropTables(SqlConnection con)
@@ -364,40 +369,66 @@ namespace ClassUtilities
             {
                 foreach(Driver driver in driverList)
                 {
-                    driver.country = addCountryName(connection, driver);
-                    driver.team = addTeamName(connection, driver);
+                    driver.country = getNameFromCode(connection, $"SELECT * FROM Country WHERE countryCode='{driver.country}';", 1);
+                    driver.team = getNameFromCode(connection, $"SELECT * FROM Team WHERE teamCode={driver.team};", 1);
                 }
             }
             return driverList;
         }
 
-        public string addCountryName(SqlConnection connection, Driver driver)
+        public List<Stats> detailsStats(List<Stats> statsList)
         {
-            string sql = $"SELECT * FROM Country WHERE countryCode='{driver.country}';";
-            string country = "";
-
-            using (SqlCommand command = new SqlCommand(sql, connection))
+            using (SqlConnection connection = new SqlConnection(CONNECTION_STRING))
             {
-                connection.Open();
-
-                // create data adapter
-                using (SqlDataReader reader = command.ExecuteReader())
+                foreach (Stats stats in statsList)
                 {
-                    while (reader.Read())
-                    {
-                        country = reader.GetString(1);
-                    }
+                    stats.driver = getNameFromCode(connection, $"SELECT * FROM Driver WHERE driverCode={stats.driver};", 4);
                 }
-
-                connection.Close();
             }
-
-            return country;
+            return statsList;
         }
 
-        public string addTeamName(SqlConnection connection, Driver driver)
+        public List<Race> detailsRace(List<Race> raceList)
         {
-            string sql = $"SELECT * FROM Team WHERE teamCode={Convert.ToInt32(driver.team)};";
+            using (SqlConnection connection = new SqlConnection(CONNECTION_STRING))
+            {
+                foreach (Race race in raceList)
+                {
+                    race.circuit = getNameFromCode(connection, $"SELECT * FROM Circuit WHERE circuitCode={race.circuit};", 2);
+                }
+            }
+            return raceList;
+        }
+
+        public List<Result> detailsResult(List<Result> resultList)
+        {
+            using (SqlConnection connection = new SqlConnection(CONNECTION_STRING))
+            {
+                foreach (Result result in resultList)
+                {
+                    result.race = getNameFromCode(connection, $"SELECT * FROM Race WHERE raceCode={result.race};", 4);
+                    result.driver = getNameFromCode(connection, $"SELECT * FROM Driver WHERE driverCode={result.driver};", 4);
+                    result.team = getNameFromCode(connection, $"SELECT * FROM Team WHERE teamCode={result.team};", 1);
+                }
+            }
+            return resultList;
+        }
+
+        public List<TeamsResult> detailsTeamsResult(List<TeamsResult> teamsResultList)
+        {
+            using (SqlConnection connection = new SqlConnection(CONNECTION_STRING))
+            {
+                foreach (TeamsResult result in teamsResultList)
+                {
+                    result.race = getNameFromCode(connection, $"SELECT * FROM Race WHERE raceCode={result.race};", 4);
+                    result.team = getNameFromCode(connection, $"SELECT * FROM Team WHERE teamCode={result.team};", 1);
+                }
+            }
+            return teamsResultList;
+        }
+
+        public string getNameFromCode(SqlConnection connection, string sql, int fieldIndex)
+        {
             string team = "";
 
             using (SqlCommand command = new SqlCommand(sql, connection))
@@ -409,7 +440,7 @@ namespace ClassUtilities
                 {
                     while (reader.Read())
                     {
-                        team = reader.GetString(1);
+                        team = reader.GetString(fieldIndex);
                     }
                 }
 
@@ -500,6 +531,7 @@ namespace ClassUtilities
                     {
                         while (reader.Read())
                         {
+                            string circuit = reader.GetInt32(1).ToString();
                             int raceYear = reader.GetInt32(2);
                             int raceRound = reader.GetInt32(3);
                             string raceName = reader.GetString(4);
@@ -507,7 +539,7 @@ namespace ClassUtilities
                             string raceTime = reader.GetString(6);
 
                             retVal.Add(new Race(raceYear, raceRound,
-                                                raceName, raceDate, raceTime));
+                                                raceName, circuit, raceDate, raceTime));
                         }
                     }
                 }
@@ -564,10 +596,9 @@ namespace ClassUtilities
                     {
                         while (reader.Read())
                         {
-                            int resultCode = reader.GetInt32(0);
-                            int raceCode = reader.GetInt32(1);
-                            int driverCode = reader.GetInt32(2);
-                            int teamCode = reader.GetInt32(3);
+                            string race = reader.GetInt32(1).ToString();
+                            string driver = reader.GetInt32(2).ToString();
+                            string team = reader.GetInt32(3).ToString();
                             string resultPosition = reader.GetString(4);
                             string resultTime = reader.GetString(5);
                             int resultNlap = reader.GetInt32(6);
@@ -575,7 +606,7 @@ namespace ClassUtilities
                             int resultFastestLap = reader.GetInt32(8);
                             string resultFastestLapTime = reader.GetString(9);
 
-                            retVal.Add(new Result(resultCode, raceCode, driverCode, teamCode, resultPosition, resultTime, resultNlap, resultPoints, resultFastestLap, resultFastestLapTime));
+                            retVal.Add(new Result(race, driver, team, resultPosition, resultTime, resultNlap, resultPoints, resultFastestLap, resultFastestLapTime));
                         }
                     }
                 }
@@ -600,17 +631,16 @@ namespace ClassUtilities
                     {
                         while (reader.Read())
                         {
-                            int resultCode = reader.GetInt32(0);
-                            int raceCode = reader.GetInt32(1);
-                            int driverCode = reader.GetInt32(2);
-                            int teamCode = reader.GetInt32(3);
+                            string race = reader.GetInt32(1).ToString();
+                            string driver = reader.GetInt32(2).ToString();
+                            string team = reader.GetInt32(3).ToString();
                             string resultPosition = reader.GetString(4);
                             string resultTime = reader.GetString(5);
                             int resultNlap = reader.GetInt32(6);
                             int resultPoints = reader.GetInt32(7);
                             int resultFastestLap = reader.GetInt32(8);
                             string resultFastestLapTime = reader.GetString(9);
-                            retVal = new Result(resultCode, raceCode, driverCode, teamCode, resultPosition, resultTime, resultNlap, resultPoints, resultFastestLap, resultFastestLapTime);
+                            retVal = new Result(race, driver, team, resultPosition, resultTime, resultNlap, resultPoints, resultFastestLap, resultFastestLapTime);
                         }
                     }
                 }
@@ -633,12 +663,11 @@ namespace ClassUtilities
                     {
                         while (reader.Read())
                         {
-                            int teamResultsCode = reader.GetInt32(0);
-                            int raceCode = reader.GetInt32(1);
-                            int teamCode = reader.GetInt32(2);
+                            string raceCode = reader.GetInt32(1).ToString();
+                            string teamCode = reader.GetInt32(2).ToString();
                             int points = reader.GetInt32(3);
 
-                            retVal.Add(new TeamsResult(teamResultsCode, raceCode, teamCode, points));
+                            retVal.Add(new TeamsResult(raceCode, teamCode, points));
                         }
                     }
                 }
@@ -663,11 +692,11 @@ namespace ClassUtilities
                     {
                         while (reader.Read())
                         {
-                            int raceCode = reader.GetInt32(1);
-                            int teamCode = reader.GetInt32(2);
+                            string raceCode = reader.GetInt32(1).ToString();
+                            string teamCode = reader.GetInt32(2).ToString();
                             int points = reader.GetInt32(3);
 
-                            retVal = new TeamsResult(code, raceCode, teamCode, points);
+                            retVal = new TeamsResult(raceCode, teamCode, points);
                         }
                     }
                 }
@@ -727,7 +756,7 @@ namespace ClassUtilities
                                 int nThirdPlace = reader.GetInt32(6);
                                 int nPodius = reader.GetInt32(7);
 
-                                retVal.Add(new Stats(code, totPoints, averagePoints, nFastestLap,
+                                retVal.Add(new Stats(code.ToString(), totPoints, averagePoints, nFastestLap,
                                                 nFirstPlace, nSecondPlace, nThirdPlace, nPodius));
                             }
                         }
@@ -798,7 +827,7 @@ namespace ClassUtilities
             return retVal;
         }
 
-        public Circuit getTableCircuitByCode(int code)
+        public Circuit getCircuitByCode(int code)
         {
             Circuit retVal = null;
             using (SqlConnection connection = new SqlConnection(CONNECTION_STRING))
@@ -829,7 +858,7 @@ namespace ClassUtilities
             return retVal;
         }
 
-        public Race getTableRaceByCode(int code)
+        public Race getRaceByCode(int code)
         {
             Race retVal = null;
             using (SqlConnection connection = new SqlConnection(CONNECTION_STRING))
@@ -846,6 +875,7 @@ namespace ClassUtilities
                     {
                         while (reader.Read())
                         {
+                            string circuit = reader.GetInt32(1).ToString();
                             int raceYear = reader.GetInt32(2);
                             int raceRound = reader.GetInt32(3);
                             string raceName = reader.GetString(4);
@@ -853,7 +883,7 @@ namespace ClassUtilities
                             string raceTime = reader.GetString(6);
 
                             retVal = new Race(raceYear, raceRound,
-                                            raceName, raceDate, raceTime);
+                                            raceName, circuit, raceDate, raceTime);
                         }
                     }
                 }
@@ -861,7 +891,41 @@ namespace ClassUtilities
             return retVal;
         }
 
-        public Team getTableTeamByCode(int code)
+        public Team getTeamByCode(int code)
+        {
+            Team retVal = null;
+            using (SqlConnection connection = new SqlConnection(CONNECTION_STRING))
+            {
+                StringBuilder sb = new StringBuilder();
+                string sql = $"SELECT * FROM Team WHERE teamCode LIKE {code};";
+
+                using (SqlCommand command = new SqlCommand(sql, connection))
+                {
+                    connection.Open();
+
+                    // create data adapter
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            string teamFullName = reader.GetString(1);
+                            string teamBase = reader.GetString(2);
+                            string teamChief = reader.GetString(3);
+                            string teamPowerUnit = reader.GetString(4);
+                            int teamWorldChampionships = reader.GetInt32(5);
+                            int teamPolePositions = reader.GetInt32(6);
+
+                            retVal = new Team(teamFullName, teamBase,
+                                              teamChief, teamPowerUnit,
+                                              teamWorldChampionships, teamPolePositions);
+                        }
+                    }
+                }
+            }
+            return retVal;
+        }
+
+        public Team getStatsByCode(int code)
         {
             Team retVal = null;
             using (SqlConnection connection = new SqlConnection(CONNECTION_STRING))

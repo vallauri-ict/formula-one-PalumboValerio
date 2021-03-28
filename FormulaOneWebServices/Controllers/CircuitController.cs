@@ -30,7 +30,7 @@ namespace FormulaOneWebServices.Controllers
         [HttpGet("{id}")]
         public ClassUtilities.Models.Circuit Get(int id)
         {
-            return utilities.getTableCircuitByCode(id);
+            return utilities.getCircuitByCode(id);
         }
 
         // POST: api/Circuit
