@@ -143,106 +143,91 @@
             </div>
         </form>
     </body>
+</html>
 
-    <script>
-        "use strict";
-        $(document).ready(function (){
-            let list=$("#lst");
-            let txt=$("#txt");
-            let btnSend = $("#btn").hide();
-            let array=["Select an API", "Country", "Circuit", "Team", "Race", "Driver", "Result", "TeamsResult", "Stats"];
+<script>
+    "use strict";
+    $(document).ready(function () {
+        let list = $("#lst");
+        let txt = $("#txt");
+        let btnSend = $("#btn").hide();
+        let array = ["Select an API", "Country", "Circuit", "Team", "Race", "Driver", "Result", "TeamsResult", "Stats"];
 
-            let drvp=$(".Drvp").hide();
+        let drvp = $(".Drvp").hide();
 
-            for (let i = 0; i < array.length; i++) 
-            {
-                let newOption = `<option value='${array[i]}'>${array[i]}</option>`; 
-                list.append(newOption);
+        for (let i = 0; i < array.length; i++) {
+            let newOption = `<option value='${array[i]}'>${array[i]}</option>`;
+            list.append(newOption);
+        }
+
+        btnSend.on("click", function () {
+            let path = `${window.location.href}api/${list.val()}`;
+            let cont = 0;
+
+            if (list.val() == "Driver") {
+                if (txt.val() != "") {
+                    path += `/${txt.val()}`;
+                }
+                else {
+                    for (let i = 0; i < 3; i++) {
+                        if (drvp.eq(i).children().val() != "") {
+                            path += `/${drvp.eq(i).children().val()}`;
+                        }
+                        else {
+                            cont++;
+                            path += `/none`;
+                        }
+                    }
+                    if (cont == 3) {
+                        path = `${window.location.href}api/${list.val()}`;
+                    }
+                }
+                drvp.show();
+                drvp.children().val("");
+            }
+            else {
+                path += `/${txt.val()}`;
             }
 
-            btnSend.on("click", function(){
-                let path=`${window.location.href}api/${list.val()}`;
-                let cont=0;
-
-                if (list.val() == "Driver")
-                {
-                    if(txt.val()!="")
-                    {
-                        path+=`/${txt.val()}`;
-                    }
-                    else
-                    {
-                        for (let i = 0; i < 3; i++) {
-                            if(drvp.eq(i).children().val()!="")
-                            {
-                                path+=`/${drvp.eq(i).children().val()}`;
-                            }
-                            else
-                            {
-                                cont++;
-                                path+=`/none`;
-                            }  
-                        }
-                        if(cont==3)
-                        {
-                            path=`${window.location.href}api/${list.val()}`;
-                        }
-                    }
-                    drvp.show();
-                    drvp.children().val("");
-                }
-                else
-                {
-                    path+=`/${txt.val()}`;
-                }
-
-                txt.val("");
-                txt.prop("disabled", false);
-                window.open(path, "_blank");
-            });
-
-            drvp.children().on("input", function () {
-                if($(this).val()!="")
-                {
-                    drvp.hide();
-                    $(this).parent("div").show();
-                    txt.prop("disabled", true);
-                }
-                else{
-                    drvp.show();
-                    txt.prop("disabled", false);
-                }
-            });
-
-            txt.on("input", function () {
-                if (list.val() == "Driver")
-                {
-                    if ($(this).val() != "")
-                    {
-                        drvp.hide();
-                    }
-                    else
-                    {
-                        drvp.show();
-                    }
-                }
-            });
-
-            list.on("change", function () {
-                if($("#lst option[value='Select an API']"))
-                {
-                    $("#lst option[value='Select an API']").remove();
-                    btnSend.show();
-                }
-                if(list.val()=="Driver")
-                {
-                    drvp.show();
-                }
-                else
-                {
-                    drvp.hide();
-                }
-            })
+            txt.val("");
+            txt.prop("disabled", false);
+            window.open(path, "_blank");
         });
-    </script>
-</html>
+
+        drvp.children().on("input", function () {
+            if ($(this).val() != "") {
+                drvp.hide();
+                $(this).parent("div").show();
+                txt.prop("disabled", true);
+            }
+            else {
+                drvp.show();
+                txt.prop("disabled", false);
+            }
+        });
+
+        txt.on("input", function () {
+            if (list.val() == "Driver") {
+                if ($(this).val() != "") {
+                    drvp.hide();
+                }
+                else {
+                    drvp.show();
+                }
+            }
+        });
+
+        list.on("change", function () {
+            if ($("#lst option[value='Select an API']")) {
+                $("#lst option[value='Select an API']").remove();
+                btnSend.show();
+            }
+            if (list.val() == "Driver") {
+                drvp.show();
+            }
+            else {
+                drvp.hide();
+            }
+        })
+    });
+</script>
